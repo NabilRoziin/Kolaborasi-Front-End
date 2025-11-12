@@ -3,12 +3,12 @@
 
 export const CAROUSEL_ITEMS = [
   {
-    image: "/delicious-kebab-platter.jpg",
+    image: "/images/Kebab_Original.jpeg",
     title: "Mixed Grill Platter",
     description: "Assorted kebab platter dengan daging premium dan sayuran segar",
   },
   {
-    image: "/grilled-chicken-kebab.jpg",
+    image: "/images/Burger.jpg",
     title: "Chicken Kebab",
     description: "Daging ayam pilihan yang dipanggang sempurna dengan bumbu rahasia kami",
   },

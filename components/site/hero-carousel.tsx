@@ -74,7 +74,7 @@ export function HeroCarousel() {
         ))}
 
         {/* Text Content - Positioned at bottom */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 md:p-8 lg:p-12 text-white">
+        <div className="absolute bottom-6 left-0 right-0 p-4 sm:p-6 md:p-8 lg:p-12 text-white">
           <div className="container mx-auto max-w-10xl px-">
             <h2 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-bold text-balance mb-2 sm:mb-3">
               {mounted ? CAROUSEL_ITEMS[currentIndex].title : CAROUSEL_ITEMS[0].title}
@@ -104,7 +104,7 @@ export function HeroCarousel() {
         </button>
 
         {/* Dot Indicators */}
-        <div className="absolute bottom-16 sm:bottom-20 left-1/2 -translate-x-1/2 z-10 flex gap-1.5 sm:gap-2">
+        <div className="absolute bottom-9  left-1/2 -translate-x-1/2 z-10 flex gap-1.5 sm:gap-2">
           {CAROUSEL_ITEMS.map((_, index) => (
             <button
               key={index}

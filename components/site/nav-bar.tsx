@@ -17,11 +17,11 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 const links = [
-  { href: "#home", label: "Home" },
-  { href: "#menu", label: "Our Menu" },
-  { href: "#about", label: "About" },
-  { href: "#testimony", label: "Testimony" },
-  { href: "#contact", label: "Contact" },
+  { href: "#home", label: "Beranda" },
+  { href: "#menu", label: "Menu Kami" },
+  { href: "#about", label: "Tentang Kami" },
+  { href: "#testimony", label: "Testimoni" },
+  { href: "#contact", label: "Kontak" },
 ]
 
 export function NavBar() {
@@ -56,20 +56,20 @@ export function NavBar() {
           : "border-b border-border bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60",
       )}
     >
-      <div className="container mx-auto flex h-14 sm:h-16 items-center justify-between px-3 sm:px-4">
-        <Link href="#home" className="flex items-center gap-2 flex-shrink-0">
+      <div className="container mx-auto flex h-14 sm:h-16 items-center justify-between">
+        <Link href="#home" className="flex items-center  flex-shrink-0">
           <Image
-            src="/placeholder-logo.svg"
+            src="/images/Logo_Kebab.png"
             alt="KebabNation logo"
-            width={28}
-            height={28}
-            className="h-6 w-6 sm:h-7 sm:w-7"
+            width={40}
+            height={40}
+            className="h-6 w-6 sm:h-20 sm:w-28"
           />
-          <span className="text-base sm:text-lg font-semibold tracking-tight hidden xs:inline">KebabNation</span>
+          <span className="text-base sm:text-lg font-semibold tracking-tight  xs:inline">Sultan Kebab</span>
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-6 lg:gap-8">
+        <nav className="hidden md:flex items-center gap-6 lg:gap-10">
           {links.map((l) => (
             <a
               key={l.href}

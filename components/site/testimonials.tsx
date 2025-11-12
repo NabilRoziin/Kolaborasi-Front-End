@@ -167,9 +167,9 @@ export function Testimonials() {
               </div>
             </div>
 
-            <div className="relative hidden md:flex items-start justify-center min-h-[700px] lg:min-h-[950px] rounded-xl overflow-hidden border border-border shadow-lg">
+            <div className="relative hidden md:flex items-start justify-center min-h-[700px] lg:min-h-[620px] rounded-xl overflow-hidden border border-border shadow-lg">
               <Image
-                src="/delicious-kebab-food.jpg"
+                src="/images/Tetsimoni.jpg"
                 alt="Delicious kebab food"
                 fill
                 className="object-cover hover:scale-105 transition-transform duration-300"
