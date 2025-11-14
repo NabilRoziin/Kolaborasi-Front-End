@@ -17,165 +17,118 @@ type MenuItem = {
   price: number
   description: string
   imageQuery: string
-}
-
-const FOODS: MenuItem[] = [
-  {
-    id: "1",
-    name: "Classic Chicken Kebab",
-    price: 49000,
-    description: "Marinated chicken with fresh veggies and tangy sauce.",
-    imageQuery: "classic%20chicken%20kebab%20wrap",
-  },
-  {
-    id: "2",
-    name: "Lamb Kofta Kebab",
-    price: 59000,
-    description: "Juicy lamb, herbs, and spices – a house favorite.",
-    imageQuery: "lamb%20kofta%20kebab%20with%20pita",
-  },
-  {
-    id: "3",
-    name: "Falafel Wrap",
-    price: 39000,
-    description: "Crispy falafel, tahini, and crunchy veggies.",
-    imageQuery: "falafel%20wrap%20with%20tahini",
-  },
-  {
-    id: "4",
-    name: "Mixed Grill Platter",
-    price: 89000,
-    description: "Chicken, lamb, and veggie skewers with sides.",
-    imageQuery: "mixed%20grill%20platter%20kebab",
-  },
-  {
-    id: "5",
-    name: "Halloumi Kebab",
-    price: 52000,
-    description: "Grilled halloumi and vegetables with zesty sauce.",
-    imageQuery: "halloumi%20kebab%20skewers",
-  },
-  {
-    id: "6",
-    name: "Kebab Bowl",
-    price: 65000,
-    description: "Your choice of protein over rice with salad.",
-    imageQuery: "kebab%20bowl%20with%20rice%20and%20salad",
-  },
-]
-
-const DRINKS: MenuItem[] = [
-  {
-    id: "d1",
-    name: "Ayran",
-    price: 15000,
-    description: "Refreshing yogurt-based drink, lightly salted.",
-    imageQuery: "ayran%20yogurt%20drink",
-  },
-  {
-    id: "d2",
-    name: "Turkish Tea",
-    price: 12000,
-    description: "Hot black tea served traditional style.",
-    imageQuery: "turkish%20tea%20in%20glass",
-  },
-  {
-    id: "d3",
-    name: "Pomegranate Juice",
-    price: 18000,
-    description: "Fresh, tangy, and antioxidant-rich.",
-    imageQuery: "pomegranate%20juice%20glass",
-  },
-  {
-    id: "d4",
-    name: "Mint Lemonade",
-    price: 16000,
-    description: "Zesty lemonade infused with fresh mint.",
-    imageQuery: "mint%20lemonade%20glass",
-  },
-  {
-    id: "d5",
-    name: "Sparkling Water",
-    price: 8000,
-    description: "Crisp and bubbly refreshment.",
-    imageQuery: "sparkling%20water%20bottle",
-  },
-  {
-    id: "d6",
-    name: "Bottled Water",
-    price: 6000,
-    description: "Pure and simple hydration.",
-    imageQuery: "bottled%20water%20on%20table",
-  },
-]
-
-const DEFAULT_STOCK = 10
-const STOCK_KEY = "kebabnation_stock"
+  quantity: number
+  category_id: number
+  image: string
+}  
 
 function formatIDR(n: number) {
   return "Rp " + n.toLocaleString("id-ID", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+export type AddInputItem = {
+  id: string
+  name: string
+  price: number
+  url_png?: string | null
 }
 
 export function MenuGrid() {
   const { toast } = useToast()
   const { addItem } = useCart()
+    type Section = {
+    section_key: string
+    content: {
+      title: string
+      description: string
+    }
+  }
+
+  type PageData = {
+    sections: Section[]
+  }
 
   const [sizeDialogOpen, setSizeDialogOpen] = useState(false)
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null)
 
-  const [stockMap, setStockMap] = useState<Record<string, number>>({})
+  const [dataMenu, setDataMenu] = useState<MenuItem[]>([])
+  const [ pageData, setPageData ] = useState<PageData | null>(null)
+
+  // useEffect(() => {
+  //   async function fetchPage() {
+  //     try {
+  //       const res = await fetch("http://localhost:8000/api/pages/menu")
+  //       const json = await res.json()
+  //       setPageData(json.data)
+  //     } catch (error) {
+  //       console.error("Error fetching page: ", error)
+  //     }
+  //   }
+
+  //   fetchPage()
+  // }, [])
+  // if(!pageData) return null
+  // const menu = pageData.sections.find((s) => s.section_key === "menu")
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STOCK_KEY)
-      if (raw) {
-        const parsed = JSON.parse(raw) as Record<string, number>
-        setStockMap(parsed)
-        return
-      }
-    } catch {
-      // ignore storage errors
-    }
-    const initial: Record<string, number> = {}
-    for (const item of [...FOODS, ...DRINKS]) {
-      initial[item.id] = DEFAULT_STOCK
-    }
-    setStockMap(initial)
-    try {
-      localStorage.setItem(STOCK_KEY, JSON.stringify(initial))
-      window.dispatchEvent(new Event("kebabnation:stock-updated"))
-    } catch {
-      // ignore storage errors
-    }
-  }, [])
-
-  useEffect(() => {
-    const handler = () => {
+    async function fetchMenu() {
+      
       try {
-        const raw = localStorage.getItem(STOCK_KEY)
-        if (raw) {
-          setStockMap(JSON.parse(raw) as Record<string, number>)
+        // 1. Ambil semua kategori
+        const catRes = await fetch("http://localhost:8000/api/categories")
+        const catJson = await catRes.json()
+        const categories = catJson.data
+
+        let allProducts: MenuItem[] = []
+
+        // 2. Loop setiap kategori → fetch product kategori tersebut
+        for (const cat of categories) {
+          const prodRes = await fetch(`http://localhost:8000/api/products/${cat.id}`)
+          const prodJson = await prodRes.json()
+
+          const products = prodJson.data.map((p: any) => ({
+            id: p.id,
+            name: p.name,
+            price: p.price,
+            quantity: p.quantity,
+            imageQuery: p.url_png,
+            category_id: p.category_id, // makanan/minuman
+          }))
+
+          console.log("API categories:", categories)
+      console.log("API products:", products)
+
+          allProducts = [...allProducts, ...products]
         }
-      } catch {
-        // ignore
+
+        // 3. Masukkan ke state
+        setDataMenu(allProducts)        
+
+      } catch (error) {
+        console.error("Error fetching products: ", error)
       }
     }
-    window.addEventListener("kebabnation:stock-updated", handler)
-    return () => window.removeEventListener("kebabnation:stock-updated", handler)
+
+    fetchMenu()
   }, [])
 
-  const getStock = (id: string) => stockMap[id] ?? 0
 
+  // 🔹 Ambil stok dari API result
+  const getStock = (item: MenuItem) => item.quantity ?? 0
+
+
+  // 🔹 Ketika klik barang
   const handleAddClick = (item: MenuItem) => {
-    if (getStock(item.id) <= 0) {
+    if (getStock(item) <= 0) {
       toast({
         title: "Stok habis",
-        description: `${item.name} saat ini tidak tersedia.`,
+        description: `${item.name} sedang tidak tersedia.`,
         variant: "destructive",
       })
       return
     }
-    const isFood = !item.id.startsWith("d")
+
+    const isFood = item.category_id === 1
+
     if (isFood) {
       setSelectedItem(item)
       setSizeDialogOpen(true)
@@ -184,48 +137,59 @@ export function MenuGrid() {
     }
   }
 
-  const handleSizeConfirm = (size: "small" | "medium" | "large", finalPrice: number) => {
+  // 🔹 Ketika memilih ukuran
+  const handleSizeConfirm = (
+    size: "small" | "medium" | "large",
+    finalPrice: number
+  ) => {
     if (!selectedItem) return
+
     addItem({
       id: selectedItem.id,
       name: selectedItem.name,
       price: finalPrice,
-      imageQuery: selectedItem.imageQuery,
+      imageQuery: selectedItem.image,
       size,
     })
-    const sizeLabel = size === "small" ? "Kecil" : size === "medium" ? "Sedang" : "Besar"
+
     toast({
-      title: "Ditambahkan ke keranjang",
-      description: `${selectedItem.name} (${sizeLabel}) telah ditambahkan ke keranjang Anda.`,
+      title: "Ditambahkan",
+      description: `${selectedItem.name} ukuran ${size} telah ditambahkan.`,
     })
+
     setSelectedItem(null)
   }
 
+
+  // 🔹 Untuk minuman (langsung tambahkan)
   const addToCart = (item: MenuItem) => {
-    if (getStock(item.id) <= 0) {
+    if (getStock(item) <= 0) {
       toast({
         title: "Stok habis",
-        description: `${item.name} saat ini tidak tersedia.`,
+        description: `${item.name} sedang tidak tersedia.`,
         variant: "destructive",
       })
       return
     }
+
     addItem({
       id: item.id,
       name: item.name,
       price: item.price,
-      imageQuery: item.imageQuery,
+      imageQuery: item.image,
     })
+
     toast({
-      title: "Ditambahkan ke keranjang",
-      description: `${item.name} telah ditambahkan ke keranjang Anda.`,
+      title: "Ditambahkan",
+      description: `${item.name} telah ditambahkan ke keranjang.`,
     })
   }
+
 
   const renderGrid = (list: MenuItem[]) => (
     <div className="grid grid-cols-1 gap-4 sm:gap-5 md:gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {list.map((item) => {
-        const outOfStock = getStock(item.id) <= 0
+        const outOfStock = getStock(item) <= 0
         return (
           <Card
             key={item.id}
@@ -264,7 +228,7 @@ export function MenuGrid() {
                   <span className="hidden sm:inline">Add</span>
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground">Sisa stok: {Math.max(0, getStock(item.id))}</p>
+              <p className="text-xs text-muted-foreground">Sisa stok: {Math.max(0, getStock(item))}</p>
             </CardContent>
           </Card>
         )
@@ -275,8 +239,8 @@ export function MenuGrid() {
   return (
     <div className="w-full">
       <div className="mb-6 sm:mb-8 text-center">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-pretty">Our Menu</h2>
-        <p className="mt-2 text-sm sm:text-base text-muted-foreground">Freshly grilled and wrapped to perfection.</p>
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-pretty"></h2>
+        <p className="mt-2 text-sm sm:text-base text-muted-foreground"></p>
       </div>
 
       <Tabs defaultValue="foods" className="w-full">
@@ -295,10 +259,10 @@ export function MenuGrid() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="foods" className="w-full">
-          {renderGrid(FOODS)}
+          {renderGrid(dataMenu.filter(item => item.category_id === 1))}
         </TabsContent>
         <TabsContent value="drinks" className="w-full">
-          {renderGrid(DRINKS)}
+          {renderGrid(dataMenu.filter(item => item.category_id === 2))}
         </TabsContent>
       </Tabs>
 

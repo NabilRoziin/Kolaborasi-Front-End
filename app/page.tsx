@@ -1,3 +1,5 @@
+"use client" 
+
 import { NavBar } from "@/components/site/nav-bar"
 import { Hero } from "@/components/site/hero"
 import { MenuGrid } from "@/components/site/menu-grid"
@@ -8,8 +10,28 @@ import { Footer } from "@/components/site/footer"
 import { FloatingCart } from "@/components/site/floating-cart"
 import { Instagram, Facebook, Music } from "lucide-react"
 import { DiscountClaimButton } from "@/components/site/discount-claim-button"
+import { useEffect, useState } from "react"
 
 export default function HomePage() {
+  const [pageData, setPageData] = useState(null)
+
+  useEffect(() => {
+    async function fetchPage() {
+      try {
+        const res = await fetch("http://localhost:8000/api/pages/discount")
+        const json = await res.json()
+        setPageData(json.data)
+      } catch (err) {
+        console.error("Error fetching page: ", err)
+      }
+    }
+
+    fetchPage()
+  }, [])
+
+  if(!pageData) return null
+
+  const discount = pageData.sections.find((s) => s.section_key === "discount")
   return (
     <main id="home" className="min-h-dvh bg-background text-foreground scroll-mt-24">
       <NavBar />
@@ -34,9 +56,9 @@ export default function HomePage() {
             >
               Promo Spesial
             </div>
-            <h2 className="text-3xl md:text-5xl font-semibold text-pretty">Dapatkan Diskon 20%</h2>
+            <h2 className="text-3xl md:text-5xl font-semibold text-pretty">{discount?.content?.title}</h2>
             <p className="mt-3 text-base md:text-lg/7 text-destructive-foreground/90">
-              Kunjungi sosial media kami dan Anda akan mendapatkan diskon 20% untuk pesanan Anda.
+              {discount?.content?.description}
             </p>
 
             <div

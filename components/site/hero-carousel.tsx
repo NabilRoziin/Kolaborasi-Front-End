@@ -11,22 +11,28 @@ export function HeroCarousel() {
   const [isAutoPlay, setIsAutoPlay] = useState(true)
   const [isLoading, setIsLoading] = useState(true)
 
-  // 🔹 Fetch data dari API seperti di Hero
-  useEffect(() => {
+    // 🔹 Fetch data dari API seperti di Hero
+    useEffect(() => {
     async function fetchPage() {
       try {
         const res = await fetch("http://localhost:8000/api/pages/home")
         const json = await res.json()
-        const home = json.data.sections.find((s: any) => s.section_key === "home")
 
-        if (home?.contents?.length) {
-          setCarouselItems(home.contents) // konten carousel
-        } else if (home?.content) {
-          // fallback: kalau tidak ada contents array
-          setCarouselItems([{ ...home.content, file_path: home.file_path }])
+      // 🔹 Ambil semua section dengan key 'home'
+        const homeSections = json.data.sections.filter(
+          (s) => s.section_key === "home"
+        )
+
+        if (homeSections.length) {
+          // map setiap section jadi satu item carousel
+          const items = homeSections.map((s) => ({
+            ...s.content, // ambil isi JSON content
+            file_path: s.file_path ? `${s.file_path}` : null,
+          }))
+          setCarouselItems(items)
         }
 
-        setPageData(home)
+        setPageData(json.data)
       } catch (err) {
         console.error("Error fetching page:", err)
       } finally {
@@ -92,7 +98,7 @@ export function HeroCarousel() {
           >
             <Image
               src={item.file_path || "/placeholder.svg"}
-              alt={item.title1 || "carousel image"}
+              alt={item.file_path || "carousel image"}
               fill
               className="object-cover w-full h-full"
               sizes="100vw"

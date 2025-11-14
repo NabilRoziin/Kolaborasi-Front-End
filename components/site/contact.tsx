@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -11,6 +11,23 @@ import { useToast } from "@/hooks/use-toast"
 export function Contact() {
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
+  const [business, setBusiness] = useState<any>(null)
+
+  useEffect(() => {
+    async function fetchBusiness() {
+      try {
+        const res = await fetch("http://localhost:8000/api/business/Sultan Java")
+        const json = await res.json()
+        setBusiness(json.data)
+      } catch (err) {
+        console.error("Error fetching business:", err)
+      }
+    }
+
+    fetchBusiness()
+  }, [])
+
+  if (!business) return <p>Loading...</p>
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -83,15 +100,15 @@ export function Contact() {
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
           <div className="rounded-lg border border-border p-4 break-words">
             <div className="font-medium">Phone</div>
-            <div className="text-muted-foreground">+1 (555) 123-4567</div>
+            <div className="text-muted-foreground">+{business?.phone}</div>
           </div>
           <div className="rounded-lg border border-border p-4 break-words">
             <div className="font-medium">Email</div>
-            <div className="text-muted-foreground">hello@kebabnation.com</div>
+            <div className="text-muted-foreground">{business?.email}</div>
           </div>
           <div className="rounded-lg border border-border p-4 break-words">
             <div className="font-medium">Address</div>
-            <div className="text-muted-foreground">123 Spice Ave, Flavor Town</div>
+            <div className="text-muted-foreground">{business?.address}</div>
           </div>
         </div>
       </div>
@@ -100,7 +117,7 @@ export function Contact() {
         {/* Optional Google Maps Embed */}
         <iframe
           title="KebabNation location map"
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3152.293!2d-122.4194!3d37.7749!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3AKebabNation!2sKebabNation!5e0!3m2!1sen!2sus!4v0000000000"
+          src={business?.embed_map}
           className="w-full h-full min-h-[320px]" /* fill card height; responsive min height */
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
