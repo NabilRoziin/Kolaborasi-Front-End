@@ -1,7 +1,8 @@
 "use client"
 
+// import { useRouter } from "next/router"
 import type { ReactNode } from "react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Users, Briefcase, ArrowLeft } from "lucide-react"
@@ -9,7 +10,14 @@ import Link from "next/link"
 import { RegisterForm } from "@/components/auth/register-form"
 
 export default function Page(): ReactNode {
-  const [selectedRole, setSelectedRole] = useState<"customer" | "staff" | null>(null)
+  const [selectedRole, setSelectedRole] = useState<"customer" | "employee" | null>(null)
+  // const router = useRouter()
+
+  // useEffect(() => {
+  //   if (selectedRole) {
+  //     router.push(`/register?role=${selectedRole}`)
+  //   }
+  // }, [selectedRole])
 
   if (selectedRole === null) {
     return (
@@ -55,7 +63,7 @@ export default function Page(): ReactNode {
               size="lg"
               variant="outline"
               className="h-auto py-6 flex-col gap-2 bg-transparent"
-              onClick={() => setSelectedRole("staff")}
+              onClick={() => setSelectedRole("employee")}
             >
               <Briefcase className="h-8 w-8 text-primary" />
               <div className="text-center">

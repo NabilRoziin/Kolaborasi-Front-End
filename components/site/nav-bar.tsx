@@ -28,8 +28,22 @@ export function NavBar() {
   const [open, setOpen] = useState(false)
   const [onHero, setOnHero] = useState(true)
   const { user } = useAuth()
+  const [business, setBusiness] = useState<any>(null)
 
   const isStaff = user?.role === "staff"
+  useEffect(() => {
+      async function fetchBusiness() {
+        try {
+          const res = await fetch("http://localhost:8000/api/business/Sultan Java")
+          const json = await res.json()
+          setBusiness(json.data)
+        } catch (err) {
+          console.error("Error fetching business:", err)
+        }
+      }
+  
+      fetchBusiness()
+    }, [])
 
   useEffect(() => {
     if (typeof window === "undefined") return
@@ -59,7 +73,7 @@ export function NavBar() {
       <div className="container mx-auto flex h-14 sm:h-16 items-center justify-between px-3 sm:px-4">
         <Link href="#home" className="flex items-center gap-2 flex-shrink-0">
           <Image
-            src="/placeholder-logo.svg"
+            src={business?.logo_url ?? "/placeholder.png"}
             alt="KebabNation logo"
             width={28}
             height={28}

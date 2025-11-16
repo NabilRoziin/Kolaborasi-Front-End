@@ -13,24 +13,46 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { User, ShoppingBag, Settings, LogOut, Camera, ArrowLeft } from "lucide-react"
 
+// export function CustomerOnly({ children }) {
+//   const { user, isLoading } = useAuth()
+//   const router = useRouter()
+
+//   if (isLoading) return null // jangan redirect dulu
+
+//   if (!user) {
+//     router.push("/login")
+//     return null
+//   }
+
+//   return children
+// }
+
 export default function ProfilePage() {
-  const { user, signOut } = useAuth()
+  const { user, signOut, isLoading } = useAuth()
   const { orders } = useOrders()
   const router = useRouter()
   const [isEditing, setIsEditing] = useState(false)
   const [name, setName] = useState(user?.name || "")
   const [email, setEmail] = useState(user?.email || "")
 
-  if (!user) {
+  if (isLoading)
+  {
     return (
-      <CustomerOnly>
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    )
+  }
+
+
+  if (!user) {
+    return (      
         <div className="min-h-screen bg-background flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
             <p className="mt-4 text-muted-foreground">Memuat profil...</p>
           </div>
-        </div>
-      </CustomerOnly>
+        </div>      
     )
   }
 
@@ -50,7 +72,6 @@ export default function ProfilePage() {
   }
 
   return (
-    <CustomerOnly>
       <div className="min-h-screen bg-background py-4 md:py-8">
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="mb-6 md:mb-8 flex items-center gap-3">
@@ -247,6 +268,5 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
-    </CustomerOnly>
   )
 }

@@ -268,11 +268,11 @@ export function FloatingCart() {
             <Button variant="secondary" onClick={clear} className="flex-1" disabled={items.length === 0}>
               Clear
             </Button>
-            {!user && (
+            {/* {!user && (
               <Button asChild className="flex-1" onClick={() => setOpen(false)}>
                 <Link href="/login/customer">Sign in</Link>
               </Button>
-            )}
+            )} */}
             <Button onClick={handleCheckout} className="flex-1" disabled={items.length === 0}>
               {user ? "Checkout" : "Login & Checkout"}
             </Button>

@@ -25,13 +25,13 @@ export default function RootLayout({
   return (
     <html lang="id" suppressHydrationWarning>
       <body className={`font-sans ${geistSans.variable} ${geistMono.variable}`}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>          
           <Suspense fallback={null}>
             <OrdersProvider>
               <CartProvider>{children}</CartProvider>
             </OrdersProvider>
             <Toaster />
-          </Suspense>
+          </Suspense>          
         </ThemeProvider>
       </body>
     </html>

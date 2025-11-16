@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { Facebook, Instagram, Twitter } from "lucide-react"
+import { useEffect, useState } from "react"
 
 const links = [
   { href: "#home", label: "Home" },
@@ -10,13 +11,30 @@ const links = [
 ]
 
 export function Footer() {
+  const [business, setBusiness] = useState(null)
+
+  useEffect(() => {
+    async function fetchBusiness() {
+      try {
+        const res = await fetch("http://localhost:8000/api/business/Sultan Java")
+        const json = await res.json()
+        setBusiness(json.data)
+      } catch (error) {
+        console.error("Error fetching business: ", error)
+      }
+    }
+
+    fetchBusiness()
+  }, [])
+
+  if(!business) return <p>Loading...</p>
   return (
     <footer className="border-t border-border">
       <div className="container mx-auto px-4 py-8 md:py-10 lg:py-12">
         <div className="grid grid-cols-1 gap-6 sm:gap-8 md:grid-cols-3 lg:gap-12">
           <div>
-            <div className="text-lg md:text-xl font-semibold">KebabNation</div>
-            <p className="mt-2 text-xs md:text-sm text-muted-foreground">Freshly grilled kebabs, delivered fast.</p>
+            <div className="text-lg md:text-xl font-semibold">{business?.name_company}</div>
+            <p className="mt-2 text-xs md:text-sm text-muted-foreground">{business?.slogan}</p>
           </div>
 
           <nav className="grid grid-cols-2 gap-2 md:gap-3">
@@ -57,7 +75,7 @@ export function Footer() {
         </div>
 
         <div className="mt-6 md:mt-8 text-xs text-muted-foreground">
-          © {new Date().getFullYear()} KebabNation. All rights reserved.
+          © {new Date().getFullYear()} {business?.name_company}. Hak cipta dilindungi undang-undang.
         </div>
       </div>
     </footer>

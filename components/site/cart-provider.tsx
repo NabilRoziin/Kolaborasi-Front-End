@@ -7,7 +7,7 @@ type CartItem = {
   id: number
   name: string
   price: number
-  image: string
+  imageQuery: string
   quantity: number
   size?: "small" | "medium" | "large"
 }
@@ -16,7 +16,7 @@ type AddItemInput = {
   id: number
   name: string
   price: number
-  image: string
+  imageQuery: string
   size?: "small" | "medium" | "large"
 }
 

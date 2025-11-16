@@ -11,8 +11,10 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Eye, EyeOff } from "lucide-react"
+import axios from "axios"
 
-export function LoginForm({ role = "customer" }: { role?: "customer" | "staff" }) {
+
+export function LoginForm({ role = "customer" }: { role?: "customer" | "employee" }) {
   const { signIn } = useAuth()
   const router = useRouter()
   const [email, setEmail] = useState("")
@@ -20,14 +22,36 @@ export function LoginForm({ role = "customer" }: { role?: "customer" | "staff" }
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
 
+  async function login() {
+    try {
+      const res = await axios.post("http://localhost:8000/api/login", {
+        email,
+        password,
+        role,
+      });
+
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("role", role);
+
+      if(!res.data.token) {
+        throw new Error("Token not provided");
+      }
+
+      return res.data
+    } catch (error) {
+      console.error("Login gagal: ", error)
+      throw error;
+    }
+  }
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
-    try {
-      await signIn({ email, password, role })
-      router.push(role === "staff" ? "/admin" : "/")
+    try {    
+      const roleFromInput = await login()
+      router.push(roleFromInput === "employee" ? "/admin" : "/")
     } catch (error) {
-      console.error("[v0] Login error:", error)
+      console.error("Login error:", error)
       setLoading(false)
     }
   }

@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import Image from "next/image"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Star } from "lucide-react"
@@ -87,6 +88,25 @@ function TestimonialCard({ t }: { t: Testimonial }) {
 }
 
 export function Testimonials() {
+  const [ pageData, setpageData ] = useState(null)
+
+  useEffect(() => {
+    async function fetchPage() {
+      try {
+        const res = await fetch("http://localhost:8000/api/pages/feedback")
+        const json = await res.json()
+        setpageData(json.data)
+      } catch (error) {
+        console.log("Page Not Found: ", error )
+      }
+    }
+    
+    fetchPage()
+  })
+
+  if (!pageData) return <p>Loading...</p>
+
+  const feedback = pageData.sections.find((s) => s.section_key === "feedback")
   return (
     <section className="relative isolate">
       <div aria-hidden className="absolute inset-y-0 right-[33.333%] hidden md:block w-px bg-border -z-10" />
@@ -96,8 +116,8 @@ export function Testimonials() {
             {/* Left side - Testimonials */}
             <div className="md:col-span-2">
               <div className="relative mb-10 md:mb-12">
-                <span className="text-sm font-medium tracking-wider text-muted-foreground uppercase">Testimonials</span>
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-pretty">Our Customer Reviews</h2>
+                <span className="text-sm font-medium tracking-wider text-muted-foreground uppercase">{feedback?.content?.title}</span>
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-pretty">{feedback?.content?.subtitle1}</h2>
                 <span
                   aria-hidden
                   className="pointer-events-none absolute -top-6 right-4 text-[80px] md:text-[120px] font-serif/700 text-muted-foreground/10 select-none"
@@ -160,17 +180,17 @@ export function Testimonials() {
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div className="flex items-center gap-2">
                     <Stars />
-                    <span className="text-sm text-muted-foreground">Rated 4.9/5 by our customers</span>
+                    <span className="text-sm text-muted-foreground">{feedback?.content.subtitle2}</span>
                   </div>
-                  <div className="text-xs text-muted-foreground">1,200+ verified reviews</div>
+                  <div className="text-xs text-muted-foreground">{feedback?.content.subtitle3}</div>
                 </div>
               </div>
             </div>
 
             <div className="relative hidden md:flex items-start justify-center min-h-[700px] lg:min-h-[950px] rounded-xl overflow-hidden border border-border shadow-lg">
               <Image
-                src="/delicious-kebab-food.jpg"
-                alt="Delicious kebab food"
+                src={feedback?.content.file_path || "/delicious-kebab-food.jpg"} 
+                alt={feedback?.content.file_path}
                 fill
                 className="object-cover hover:scale-105 transition-transform duration-300"
                 sizes="(min-width: 1024px) 25vw, 33vw"

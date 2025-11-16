@@ -11,8 +11,9 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Eye, EyeOff } from "lucide-react"
+import axios from "axios"
 
-export function RegisterForm({ role = "customer" }: { role?: "customer" | "staff" }) {
+export function RegisterForm({ role = "customer" }: { role?: "customer" | "employee" }) {
   const { register } = useAuth()
   const router = useRouter()
   const [name, setName] = useState("")
@@ -21,19 +22,41 @@ export function RegisterForm({ role = "customer" }: { role?: "customer" | "staff
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
 
+  async function Register() {
+    try {
+      const res = await axios.post("http://localhost:8000/api/register", {
+        name,
+        email,
+        password,
+        role,
+      });      
+      localStorage.setItem("role", role);
+
+      return res.data
+    } catch (error) {
+      console.error("Register gagal: ", error)
+      throw error;
+    }
+  }
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
-    try {
-      await register({ name, email, password, role })
-      router.push(role === "staff" ? "/admin" : "/")
+    try {      
+      const roleFromInput = await Register()
+      if (role === "employee") {
+        window.location.href = "http://127.0.0.1:8000/admin/login"
+        return
+      }
+
+      router.push("/login/customer")
     } finally {
       setLoading(false)
     }
   }
 
-  const roleText = role === "staff" ? "Staff" : "Customer"
-  const roleDescription = role === "staff" ? "Manage orders, access admin features" : "Browse menu, place orders"
+  const roleText = role === "employee" ? "employee" : "Customer"
+  const roleDescription = role === "employee" ? "Manage orders, access admin features" : "Browse menu, place orders"
 
   return (
     <Card className="mx-auto w-full max-w-sm p-8 md:p-10">
@@ -85,7 +108,7 @@ export function RegisterForm({ role = "customer" }: { role?: "customer" | "staff
       <p className="mt-6 text-center text-sm text-muted-foreground">
         Already have an account?{" "}
         <Link
-          href={role === "staff" ? "/login/staff" : "/login/customer"}
+          href={role === "employee" ? "/login/staff" : "/login/customer"}
           className="text-primary underline-offset-4 hover:underline"
         >
           Sign in
