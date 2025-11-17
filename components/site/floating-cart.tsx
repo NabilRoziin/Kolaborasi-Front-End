@@ -110,7 +110,7 @@ export function FloatingCart() {
           {items.length === 0 ? (
             <div className="grid place-items-center rounded-lg border border-border p-6 text-center">
               <Image
-                src={"/images/empty-cart.jpg"}
+                src={"/images/cart_15052599.png"}
                 alt="Keranjang belanja kosong"
                 width={120}
                 height={120}

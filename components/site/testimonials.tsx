@@ -25,7 +25,7 @@ const DATA: Testimonial[] = [
     reviews: "1 Review",
     timeAgo: "a week ago",
     highlight: true,
-    avatarSrc: "/customer-portrait.jpg",
+    avatarSrc: "/images/Man1.png",
   },
   {
     id: "t2",
@@ -34,7 +34,7 @@ const DATA: Testimonial[] = [
     text: "The best burger I have ever had elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam, quis nostrud exercitation.",
     reviews: "2 Reviews",
     timeAgo: "2 weeks ago",
-    avatarSrc: "/customer-portrait.jpg",
+    avatarSrc: "/images/Woman.png",
   },
   {
     id: "t3",
@@ -43,7 +43,7 @@ const DATA: Testimonial[] = [
     text: "Very fresh food and elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam, quis nostrud exercitation ullamco.",
     reviews: "1 Review",
     timeAgo: "3 weeks ago",
-    avatarSrc: "/customer-portrait.jpg",
+    avatarSrc: "/images/Man2.png",
   },
 ]
 
@@ -122,7 +122,7 @@ export function Testimonials() {
                   aria-hidden
                   className="pointer-events-none absolute -top-6 right-4 text-[80px] md:text-[120px] font-serif/700 text-muted-foreground/10 select-none"
                 >
-                  {'"'}
+                  {}
                 </span>
               </div>
 
@@ -187,7 +187,7 @@ export function Testimonials() {
               </div>
             </div>
 
-            <div className="relative hidden md:flex items-start justify-center min-h-[700px] lg:min-h-[950px] rounded-xl overflow-hidden border border-border shadow-lg">
+            <div className="relative hidden md:flex items-start justify-center min-h-[700px] lg:min-h-[620px] rounded-xl overflow-hidden border border-border shadow-lg">
               <Image
                 src={feedback?.content.file_path || "/delicious-kebab-food.jpg"} 
                 alt={feedback?.content.file_path}

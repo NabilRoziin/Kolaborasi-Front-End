@@ -1,5 +1,5 @@
 export const MENU_IMAGE_MAP: Record<string, string> = {
-  "1": "/images/menu/classic-chicken-kebab.jpg",
+  "1": "/images/Menu/Food/Kebab_Original.jpeg",
   "2": "/images/menu/lamb-kofta-kebab.jpg",
   "3": "/images/menu/falafel-wrap.jpg",
   "4": "/images/menu/mixed-grill-platter.jpg",
