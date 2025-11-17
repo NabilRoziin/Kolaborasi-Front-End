@@ -59,13 +59,12 @@ export function NavBar() {
       <div className="container mx-auto flex h-14 sm:h-16 items-center justify-between">
         <Link href="#home" className="flex items-center  flex-shrink-0">
           <Image
-            src="/images/Logo_Kebab.png"
+            src="/images/Logo/Logo_Web.png"
             alt="KebabNation logo"
             width={40}
             height={40}
-            className="h-6 w-6 sm:h-20 sm:w-28"
+            className="h-15 w-23  md:h-20 md:w-28"
           />
-          <span className="text-base sm:text-lg font-semibold tracking-tight  xs:inline">Sultan Kebab</span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -87,7 +86,25 @@ export function NavBar() {
         </nav>
 
         {/* Desktop Actions */}
-        <div className="hidden md:flex items-center gap-2 lg:gap-3 flex-shrink-0">
+        <div className="hidden md:flex items-center gap-2 lg:gap-5 flex-shrink-0">
+
+          <Button
+            variant="ghost"
+            size="icon"
+            asChild
+            className={cn(
+              "relative",
+              onHero
+                ? "hover:bg-destructive-foreground/10 text-destructive-foreground"
+                : "hover:bg-accent text-foreground",
+            )}
+          >
+            <Link href="/notifications" aria-label="Notifikasi">
+              <Bell className="h-5 w-5" />
+              <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-primary ring-2 ring-background" />
+            </Link>
+          </Button>
+
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger className="outline-none">
@@ -103,6 +120,7 @@ export function NavBar() {
                 <div className="px-2 py-1.5 text-xs text-muted-foreground">{user.name || user.email}</div>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
+                  
                   <Link href="/profile">Profile</Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -156,7 +174,7 @@ export function NavBar() {
               </a>
             ))}
             <Link
-              href="/notification"
+              href="/notifications"
               onClick={() => setOpen(false)}
               className={cn(
                 "text-sm flex items-center gap-2 py-2",

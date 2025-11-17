@@ -74,7 +74,7 @@ export function HeroCarousel() {
         ))}
 
         {/* Text Content - Positioned at bottom */}
-        <div className="absolute bottom-6 left-0 right-0 p-4 sm:p-6 md:p-8 lg:p-12 text-white">
+        <div className="absolute bottom-6 left-0 right-0 p-4 sm:p-6 md:p-8 lg:p-15 text-white">
           <div className="container mx-auto max-w-10xl px-">
             <h2 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-bold text-balance mb-2 sm:mb-3">
               {mounted ? CAROUSEL_ITEMS[currentIndex].title : CAROUSEL_ITEMS[0].title}

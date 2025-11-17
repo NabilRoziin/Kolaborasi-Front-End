@@ -12,9 +12,7 @@ const geistSans = Geist({ subsets: ["latin"] })
 const geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "KebabNation - Pesan Kebab Terbaik",
-  description: "Pesan kebab lezat dengan kualitas premium dan pengiriman cepat",
-  generator: "v0.app",
+  title: "Sultan Kebab",
 }
 
 export default function RootLayout({

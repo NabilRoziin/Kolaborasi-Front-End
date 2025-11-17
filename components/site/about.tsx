@@ -25,7 +25,7 @@ export function About() {
       <div
         aria-hidden="true"
         className="absolute inset-0 bg-cover bg-center bg-fixed"
-        style={{ backgroundImage: `url('/images/Burger.jpg')` }}
+        style={{ backgroundImage: `url('/images/About.png')` }}
       />
       {/* Overlay for readability */}
       <div className="relative bg-black/50">

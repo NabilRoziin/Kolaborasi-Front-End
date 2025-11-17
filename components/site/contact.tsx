@@ -100,7 +100,7 @@ export function Contact() {
         {/* Optional Google Maps Embed */}
         <iframe
           title="KebabNation location map"
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3152.293!2d-122.4194!3d37.7749!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3AKebabNation!2sKebabNation!5e0!3m2!1sen!2sus!4v0000000000"
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d415.896397505001!2d110.51611902548942!3d-7.387963080686408!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a7b1fd687aba3%3A0x37282a603422be16!2sSULTAN%20JAVA%2C%20coffee%20shop%2C%20kebab%20turki%2C%20rental%20outdoor!5e0!3m2!1sid!2sid!4v1763344729995!5m2!1sid!2sid"
           className="w-full h-full min-h-[320px]" /* fill card height; responsive min height */
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"

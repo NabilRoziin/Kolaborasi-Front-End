@@ -18,14 +18,8 @@ import { useAuth } from "@/hooks/use-auth"
 import { getActiveDiscountPercentage, isClaimed } from "@/lib/discount"
 
 const PAYMENT_METHODS = [
-  { id: "dana", name: "DANA", logo: "/dana-logo.png" },
-  { id: "shopeepay", name: "ShopeePay", logo: "/shopeepay-logo.jpg" },
-  { id: "gopay", name: "GoPay", logo: "/generic-digital-wallet-logo.png" },
-  { id: "ovo", name: "OVO", logo: "/ovo-inspired-abstract.png" },
-  { id: "bca", name: "BCA", logo: "/bca-logo.png" },
-  { id: "mandiri", name: "Mandiri", logo: "/mandiri-bank-logo.jpg" },
-  { id: "bni", name: "BNI", logo: "/bni-bank-logo.jpg" },
-  { id: "bri", name: "BRI", logo: "/bri-bank-logo.jpg" },
+  { id: "dana", name: "DANA", logo: "/images/Logo/Logo_Dana.png" },
+  { id: "cash", name: "Cash", logo: "/images/Logo/Logo_Cash.png" },
 ]
 
 const SHIPPING_FEE = 10000

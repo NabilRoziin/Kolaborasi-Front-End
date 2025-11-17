@@ -24,7 +24,7 @@ const DATA: Testimonial[] = [
     reviews: "1 Review",
     timeAgo: "a week ago",
     highlight: true,
-    avatarSrc: "/customer-portrait.jpg",
+    avatarSrc: "/images/Man1.png",
   },
   {
     id: "t2",
@@ -33,7 +33,7 @@ const DATA: Testimonial[] = [
     text: "The best burger I have ever had elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam, quis nostrud exercitation.",
     reviews: "2 Reviews",
     timeAgo: "2 weeks ago",
-    avatarSrc: "/customer-portrait.jpg",
+    avatarSrc: "/images/Woman.png",
   },
   {
     id: "t3",
@@ -42,7 +42,7 @@ const DATA: Testimonial[] = [
     text: "Very fresh food and elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam, quis nostrud exercitation ullamco.",
     reviews: "1 Review",
     timeAgo: "3 weeks ago",
-    avatarSrc: "/customer-portrait.jpg",
+    avatarSrc: "/images/Man2.png",
   },
 ]
 
@@ -102,7 +102,7 @@ export function Testimonials() {
                   aria-hidden
                   className="pointer-events-none absolute -top-6 right-4 text-[80px] md:text-[120px] font-serif/700 text-muted-foreground/10 select-none"
                 >
-                  {'"'}
+                  {}
                 </span>
               </div>
 
