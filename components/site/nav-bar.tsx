@@ -73,7 +73,7 @@ export function NavBar() {
       <div className="container mx-auto flex h-14 sm:h-16 items-center justify-between">
         <Link href="#home" className="flex items-center  flex-shrink-0">
           <Image
-            src={business?.logo_url ?? "/placeholder.png"}
+            src={`http://localhost:8000/storage/${business?.logo_url}` || "images.png"}
             alt="KebabNation logo"
             width={40}
             height={40}

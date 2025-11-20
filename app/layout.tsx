@@ -12,7 +12,7 @@ const geistSans = Geist({ subsets: ["latin"] })
 const geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Sultan Kebab",
+  title: "Sultan Java - Pesan Kebab Terbaik",
 }
 
 export default function RootLayout({

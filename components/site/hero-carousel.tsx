@@ -141,7 +141,7 @@ export function HeroCarousel() {
           <ChevronRight className="w-6 h-6" />
         </button>
 
-        {/* Dot Indicators */}
+        {/* Dot Indicators
         <div className="absolute bottom-9  left-1/2 -translate-x-1/2 z-10 flex gap-1.5 sm:gap-2">
           {CAROUSEL_ITEMS.map((_, index) => (
             <button
@@ -153,7 +153,7 @@ export function HeroCarousel() {
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}
-        </div>
+        </div> */}
       </div>
     </section>
   )
