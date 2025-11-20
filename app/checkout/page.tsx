@@ -28,7 +28,7 @@ const PAYMENT_METHODS = [
   { id: "bri", name: "BRI", logo: "/bri-bank-logo.jpg" },
 ]
 
-const SHIPPING_FEE = 10000
+const SHIPPING_FEE = 5000
 // const DISCOUNT_PERCENTAGE = 0 // remove; dynamic now
 
 // Helper function to format size label
@@ -43,6 +43,33 @@ export default function CheckoutPage() {
   const { addOrder } = useOrders()
   const { user } = useAuth()
 
+  async function sendOrderToAPI(orderData: any) {
+    try {
+      const token = localStorage.getItem("token")
+
+      const res = await fetch("http://localhost:8000/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`, // <= token masuk sini
+        },
+        body: JSON.stringify(orderData),
+      })
+
+      if (!res.ok) {
+        throw new Error("Gagal mengirim order ke server")
+      }
+
+      return await res.json()
+    } catch (error) {
+      console.error("Order API error:", error)
+      throw error
+    }
+  }
+
+  // =======================
+  // FORM HANDLING
+  // =======================
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -93,6 +120,9 @@ export default function CheckoutPage() {
     return Object.keys(newErrors).length === 0
   }
 
+  // =======================
+  // MAIN CHECKOUT
+  // =======================
   const handleCheckout = () => {
     if (!validateForm()) {
       return
@@ -100,37 +130,35 @@ export default function CheckoutPage() {
 
     // Prepare order data
     const orderData = {
-      customerInfo: {
-        fullName: `${formData.firstName} ${formData.lastName}`,
-        phone: formData.phone,
-        address: formData.address,
-        notes: formData.notes,
+      business_id: user?.business_id,
+      user_id: user?.id,
+      status: "pending",
+      total_price: total,
+      details: {
+        customerInfo: {
+          fullName: `${formData.firstName} ${formData.lastName}`,
+          phone: formData.phone,
+          address: formData.address,
+          notes: formData.notes,
+        },
+        pricing: {
+          subtotal,
+          discount,
+          shippingFee: SHIPPING_FEE,
+          total,
+        },
+        paymentMethod: PAYMENT_METHODS.find((pm) => pm.id === paymentMethod)?.name || "",
       },
-      items: items.map((item) => ({
-        id: item.id,
-        name: item.name,
-        price: item.price,
+      products: items.map((item) => ({
+        product_id: item.id,
         quantity: item.quantity,
-        imageQuery: item.imageQuery,
-        size: item.size, // Include size in order data
-      })),
-      pricing: {
-        subtotal,
-        discount, // persist claimed discount amount
-        shippingFee: SHIPPING_FEE,
-        total,
-      },
-      paymentMethod: PAYMENT_METHODS.find((pm) => pm.id === paymentMethod)?.name || "",
-      status: "Sedang di proses",
-      orderDate: new Date().toISOString(),
+      }))
     }
-
-    // Store order data in localStorage
-    localStorage.setItem("currentOrder", JSON.stringify(orderData))
 
     addOrder(orderData)
     clear()
-
+    await sendOrderToAPI(orderData)
+    clear()
     router.push("/notification")
   }
 

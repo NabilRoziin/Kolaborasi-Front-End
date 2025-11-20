@@ -73,13 +73,12 @@ export function NavBar() {
       <div className="container mx-auto flex h-14 sm:h-16 items-center justify-between px-3 sm:px-4">
         <Link href="#home" className="flex items-center gap-2 flex-shrink-0">
           <Image
-            src={business?.logo_url ?? "/placeholder.png"}
+            src={`http://localhost:8000/storage/${business?.logo_url}` || "images.png"}
             alt="KebabNation logo"
             width={28}
             height={28}
-            className="h-6 w-6 sm:h-7 sm:w-7"
-          />
-          <span className="text-base sm:text-lg font-semibold tracking-tight hidden xs:inline">KebabNation</span>
+            className="h-15 w-23  md:h-20 md:w-28"
+          />          
         </Link>
 
         {/* Desktop Navigation */}
@@ -102,6 +101,24 @@ export function NavBar() {
 
         {/* Desktop Actions */}
         <div className="hidden md:flex items-center gap-2 lg:gap-3 flex-shrink-0">
+
+          <Button
+            variant="ghost"
+            size="icon"
+            asChild
+            className={cn(
+              "relative",
+              onHero
+                ? "hover:bg-destructive-foreground/10 text-destructive-foreground"
+                : "hover:bg-accent text-foreground",
+            )}
+          >
+            <Link href="/notifications" aria-label="Notifikasi">
+              <Bell className="h-5 w-5" />
+              <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-primary ring-2 ring-background" />
+            </Link>
+          </Button>
+
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger className="outline-none">
@@ -170,7 +187,7 @@ export function NavBar() {
               </a>
             ))}
             <Link
-              href="/notification"
+              href="/notifications"
               onClick={() => setOpen(false)}
               className={cn(
                 "text-sm flex items-center gap-2 py-2",
