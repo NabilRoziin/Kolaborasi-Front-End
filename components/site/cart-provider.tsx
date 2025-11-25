@@ -4,61 +4,35 @@ import type React from "react"
 import { createContext, useContext, useEffect, useMemo, useState } from "react"
 
 type CartItem = {
-  id: number
+  id: number | string
   name: string
   price: number
   imageQuery: string
   quantity: number
-  size?: "small" | "medium" | "large"
+  variant?: string
+  variantName?: string
 }
 
 type AddItemInput = {
-  id: number
+  id: number | string
   name: string
   price: number
   imageQuery: string
-  size?: "small" | "medium" | "large"
+  variant?: string | null
+  variantName?: string 
 }
 
 type CartContextValue = {
   items: CartItem[]
   addItem: (input: AddItemInput) => void
-  decrementItem: (id: number, size?: "small" | "medium" | "large") => void
-  removeItem: (id: number, size?: "small" | "medium" | "large") => void
+  decrementItem: (id: number | string, variant?: string | null) => void
+  removeItem: (id: number | string, variant?: string | null) => void
   clear: () => void
   totalQuantity: number
   totalPrice: number
 }
 
 const CartContext = createContext<CartContextValue | undefined>(undefined)
-
-// =========================
-// LOCAL STORAGE STOCK
-// =========================
-
-const STOCK_KEY = "kebabnation_stock"
-
-function readStock(): Record<number, number> {
-  try {
-    const raw = localStorage.getItem(STOCK_KEY)
-    return raw ? (JSON.parse(raw) as Record<number, number>) : {}
-  } catch {
-    return {}
-  }
-}
-
-function writeStock(map: Record<number, number>) {
-  try {
-    localStorage.setItem(STOCK_KEY, JSON.stringify(map))
-    window.dispatchEvent(new Event("kebabnation:stock-updated"))
-  } catch {}
-}
-
-function updateStock(id: number, delta: number) {
-  const map = readStock()
-  const nextQty = Math.max(0, (map[id] ?? 0) + delta)
-  writeStock({ ...map, [id]: nextQty })
-}
 
 // =========================
 // PROVIDER
@@ -84,47 +58,50 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo<CartContextValue>(() => {
     const addItem = (input: AddItemInput) => {
-      setItems((prev) => {
-        const idx = prev.findIndex((i) => i.id === input.id && i.size === input.size)
-        if (idx >= 0) {
-          const next = [...prev]
-          next[idx].quantity += 1
-          return next
+      setItems((prevItems) => {
+        // Cari item yang sama (dengan variant yang sama juga)
+        const existingIndex = prevItems.findIndex(
+          item => item.id === input.id && item.variant === input.variant
+        )
+      
+        if (existingIndex >= 0) {
+          // Jika item sudah ada, tambah quantitynya saja
+          const updatedItems = [...prevItems]
+          updatedItems[existingIndex] = {
+            ...updatedItems[existingIndex],
+            quantity: updatedItems[existingIndex].quantity + 1
+          }
+          return updatedItems
+        } else {
+          // Jika item baru, tambahkan dengan quantity 1
+          return [...prevItems, { 
+            ...input, 
+            quantity: 1 
+          }]
         }
-        return [...prev, { ...input, quantity: 1 }]
       })
-
-      updateStock(input.id, -1)
     }
 
-    const decrementItem = (id: number, size?: "small" | "medium" | "large") => {
+    const decrementItem = (id: number | string, variant?: string | null) => {
       setItems((prev) =>
         prev
           .map((i) =>
-            i.id === id && i.size === size
+            i.id === id && i.variant === variant
               ? { ...i, quantity: i.quantity - 1 }
               : i
           )
           .filter((i) => i.quantity > 0)
       )
-      updateStock(id, +1)
     }
 
-    const removeItem = (id: number, size?: "small" | "medium" | "large") => {
-      const existing = items.find((i) => i.id === id && i.size === size)
-      const removedQty = existing?.quantity ?? 0
-
+    const removeItem = (id: number | string, variant?: string | null) => {
       setItems((prev) =>
-        prev.filter((i) => !(i.id === id && i.size === size))
+        prev.filter((i) => !(i.id === id && i.variant === variant))
       )
-
-      if (removedQty > 0) updateStock(id, removedQty)
     }
 
     const clear = () => {
-      const snapshot = [...items]
       setItems([])
-      for (const it of snapshot) updateStock(it.id, it.quantity)
     }
 
     const totalQuantity = items.reduce((sum, i) => sum + i.quantity, 0)

@@ -18,14 +18,8 @@ import { useAuth } from "@/hooks/use-auth"
 import { getActiveDiscountPercentage, isClaimed } from "@/lib/discount"
 
 const PAYMENT_METHODS = [
-  { id: "dana", name: "DANA", logo: "/dana-logo.png" },
-  { id: "shopeepay", name: "ShopeePay", logo: "/shopeepay-logo.jpg" },
-  { id: "gopay", name: "GoPay", logo: "/generic-digital-wallet-logo.png" },
-  { id: "ovo", name: "OVO", logo: "/ovo-inspired-abstract.png" },
-  { id: "bca", name: "BCA", logo: "/bca-logo.png" },
-  { id: "mandiri", name: "Mandiri", logo: "/mandiri-bank-logo.jpg" },
-  { id: "bni", name: "BNI", logo: "/bni-bank-logo.jpg" },
-  { id: "bri", name: "BRI", logo: "/bri-bank-logo.jpg" },
+  { id: "cash", name: "Cash", logo: "/cash-logo.png" },
+  { id: "emoney", name: "E-Money", logo: "/emoney-logo.jpg" },
 ]
 
 const SHIPPING_FEE = 5000
@@ -47,14 +41,21 @@ export default function CheckoutPage() {
     try {
       const token = localStorage.getItem("token")
 
-      const res = await fetch("http://localhost:8000/api/orders", {
+      console.log("📦 Data yang dikirim ke API:", orderData)
+      console.log("🎟️ Token yang dikirim:", token)
+
+      const res = await fetch("http://127.0.0.1:8000/api/orders", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Accept": "application/json",
           "Authorization": `Bearer ${token}`, // <= token masuk sini
         },
         body: JSON.stringify(orderData),
       })
+
+      console.log("📦 Data yang dikirim ke API 2:", orderData)
+      console.log("🎟️ Token yang dikirim 2:", token)
 
       if (!res.ok) {
         throw new Error("Gagal mengirim order ke server")
@@ -66,6 +67,142 @@ export default function CheckoutPage() {
       throw error
     }
   }
+
+  // Tambahkan function ini setelah sendOrderToAPI function
+  async function updateOrderStatus(orderId: string, status: string) {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`http://127.0.0.1:8000/api/orders/${orderId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          status: status
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Gagal update status order");
+      }
+
+      return await res.json();
+    } catch (error) {
+      console.error("Update status error:", error);
+      throw error;
+    }
+  }
+
+  const handleCheckout = async () => {
+  if (!validateForm()) return;
+
+  const orderData = {
+    business_id: 1,
+    user_id: user?.id,
+    status: "pending",
+    total_price: total,
+    details: {
+      customerInfo: {
+        fullName: `${formData.firstName} ${formData.lastName}`,
+        phone: formData.phone,
+        address: formData.address,
+        notes: formData.notes,
+      },
+      pricing: {
+        subtotal,
+        discount,
+        shippingFee: SHIPPING_FEE,
+        total,
+      },
+      paymentMethod: PAYMENT_METHODS.find((pm) => pm.id === paymentMethod)?.name || "",
+      paymentType: paymentMethod, // ✅ TAMBAH INI untuk tahu jenis pembayaran
+    },
+    products: items.map((item) => ({
+      product_id: item.id,
+      quantity: item.quantity,
+      final_price: item.price,
+      variant_name: item.variantName || null,
+    }))
+  };
+
+  // ✅ LOGIC BERBEDA UNTUK CASH vs E-MONEY
+  if (paymentMethod === "cash") {
+    // Untuk Cash - langsung simpan order dan redirect ke notifications
+    const saved = await sendOrderToAPI(orderData);
+    
+    // Update status jadi "processing" untuk cash
+    await updateOrderStatus(saved.data.id, "Sedang diproses");
+    
+    // Add ke local orders
+    addOrder({
+      id: saved.data.id,
+      status: "Sedang diproses",
+      total: total,
+      date: new Date().toISOString(),
+    });
+    
+    clear();
+    router.push("/notifications?status=success");
+    
+  } else if (paymentMethod === "emoney") {
+    // Untuk E-Money - proses Midtrans seperti sebelumnya
+    const saved = await sendOrderToAPI(orderData);
+    
+    const orderID = saved.data.id;
+
+    // Minta snap token
+    const snapRes = await fetch("http://127.0.0.1:8000/api/midtrans/token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({
+        order_id: orderID,
+        total_price: total,
+        user: {
+          name: user?.name,
+          email: user?.email,
+        },
+      }),
+    });
+
+    const snapJson = await snapRes.json();
+    const snapToken = snapJson.token;
+
+    window.snap.pay(snapToken, {
+      onSuccess: async (result) => {
+        addOrder({
+          id: orderID,
+          status: "success",
+          total: total,
+          date: new Date().toISOString(),
+        });
+        clear();
+        router.push("/notifications?status=success")
+      },
+      onPending: async (result) => {
+        addOrder({
+          id: orderID,
+          status: "pending",
+          total: total,
+          date: new Date().toISOString(),
+        }); 
+        router.push("/notifications?status=pending")
+      },
+      onError: () => {
+        router.push("/notifications?status=failed")
+      },
+      onClose: () => {
+        alert("Kamu nutup popup sebelum bayar 😭")
+      },
+    });
+  }
+};
+
 
   // =======================
   // FORM HANDLING
@@ -118,48 +255,6 @@ export default function CheckoutPage() {
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
-  }
-
-  // =======================
-  // MAIN CHECKOUT
-  // =======================
-  const handleCheckout = () => {
-    if (!validateForm()) {
-      return
-    }
-
-    // Prepare order data
-    const orderData = {
-      business_id: user?.business_id,
-      user_id: user?.id,
-      status: "pending",
-      total_price: total,
-      details: {
-        customerInfo: {
-          fullName: `${formData.firstName} ${formData.lastName}`,
-          phone: formData.phone,
-          address: formData.address,
-          notes: formData.notes,
-        },
-        pricing: {
-          subtotal,
-          discount,
-          shippingFee: SHIPPING_FEE,
-          total,
-        },
-        paymentMethod: PAYMENT_METHODS.find((pm) => pm.id === paymentMethod)?.name || "",
-      },
-      products: items.map((item) => ({
-        product_id: item.id,
-        quantity: item.quantity,
-      }))
-    }
-
-    addOrder(orderData)
-    clear()
-    await sendOrderToAPI(orderData)
-    clear()
-    router.push("/notification")
   }
 
   if (items.length === 0) {

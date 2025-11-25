@@ -23,7 +23,13 @@ export default function RootLayout({
   return (
     <html lang="id" suppressHydrationWarning>
       <body className={`font-sans ${geistSans.variable} ${geistMono.variable}`}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>          
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>     
+           {/* Load Snap JS */}
+          <script
+            src="https://app.sandbox.midtrans.com/snap/snap.js"
+            data-client-key={process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY}
+            async
+          />     
           <Suspense fallback={null}>
             <OrdersProvider>
               <CartProvider>{children}</CartProvider>
