@@ -28,11 +28,6 @@ function formatCurrency(n: number) {
   return "Rp " + n.toLocaleString("id-ID", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 
-function getSizeLabel(size?: "small" | "medium" | "large") {
-  if (!size) return ""
-  return size === "small" ? "Kecil" : size === "medium" ? "Sedang" : "Besar"
-}
-
 export function FloatingCart() {
   const { items, totalQuantity, totalPrice, addItem, decrementItem, removeItem, clear } = useCart()
   const [open, setOpen] = useState(false)
@@ -49,7 +44,7 @@ export function FloatingCart() {
   }, [])
 
   const FREE_DELIVERY_THRESHOLD = 100000
-  const SHIPPING_FEE = 10000
+  const SHIPPING_FEE = 5000
 
   const discountPct = getActiveDiscountPercentage(userEmail)
   const discountAmount = Math.floor(totalPrice * discountPct)
@@ -68,6 +63,7 @@ export function FloatingCart() {
 
   const canShowClaim =
     !!userEmail && isSessionEligible(userEmail) && !isClaimed(userEmail) && totalQuantity > 0 /* optional gating */
+    console.log("CART ITEMS =>", items)
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -124,10 +120,10 @@ export function FloatingCart() {
           ) : (
             <>
               <ScrollArea className="h-full pr-2">
-                <div className="space-y-4">
+                <div className="space-y-4">                  
                   {items.map((item) => (
                     <div
-                      key={`${item.id}-${item.size || "no-size"}`}
+                      key={`${item.id}-${item.variant || "no-variant"}`}
                       className="grid grid-cols-[56px_1fr_auto] items-center gap-4 rounded-lg bg-card ring-1 ring-border p-4 md:p-5 transition-shadow hover:ring-foreground/20"
                     >
                       <div className="relative h-14 w-14 overflow-hidden rounded-md bg-muted">
@@ -144,15 +140,15 @@ export function FloatingCart() {
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
                             <p className="truncate font-medium">{item.name}</p>
-                            {item.size && (
-                              <p className="text-xs text-primary font-medium">Ukuran: {getSizeLabel(item.size)}</p>
+                            {item.variantName && (
+                              <p className="text-xs text-primary font-medium">Variant: {item.variantName}</p>
                             )}
                             <p className="text-xs text-muted-foreground">{formatCurrency(item.price)} each</p>
                           </div>
                           <button
                             aria-label={`Remove ${item.name} from cart`}
                             className="text-muted-foreground transition-colors hover:text-foreground"
-                            onClick={() => removeItem(item.id, item.size)}
+                            onClick={() => removeItem(item.id, item.variant)}
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
@@ -163,7 +159,7 @@ export function FloatingCart() {
                             size="icon"
                             variant="secondary"
                             aria-label={`Decrease ${item.name} quantity`}
-                            onClick={() => decrementItem(item.id, item.size)}
+                            onClick={() => decrementItem(item.id, item.variant)}
                             className="h-8 w-8"
                           >
                             <Minus className="h-4 w-4" />
@@ -178,7 +174,7 @@ export function FloatingCart() {
                                 name: item.name,
                                 price: item.price,
                                 imageQuery: item.imageQuery,
-                                size: item.size,
+                                variant: item.variant,
                               })
                             }
                             className="h-8 w-8"

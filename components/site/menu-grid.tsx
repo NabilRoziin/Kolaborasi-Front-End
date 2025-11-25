@@ -9,10 +9,10 @@ import { useToast } from "@/hooks/use-toast"
 import { useCart } from "@/components/site/cart-provider"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { MENU_IMAGE_MAP } from "./image-map"
-import { SizeSelectionDialog } from "./size-selection-dialog"
+import { VariantSelectionDialog } from "./size-selection-dialog"
 
 type MenuItem = {
-  id: string
+  id: number
   name: string
   price: number
   description: string
@@ -86,16 +86,16 @@ export function MenuGrid() {
           const prodJson = await prodRes.json()
 
           const products = prodJson.data.map((p: any) => ({
-            id: p.id,
+            id: Number(p.id),
             name: p.name,
             price: p.price,
             quantity: p.quantity,
             imageQuery: p.url_png,
-            category_id: p.category_id, // makanan/minuman
+            category_id: p.category_id,
           }))
 
-          console.log("API categories:", categories)
-      console.log("API products:", products)
+          // console.log("API categories:", categories)
+          // console.log("API products:", products)
 
           allProducts = [...allProducts, ...products]
         }
@@ -138,10 +138,7 @@ export function MenuGrid() {
   }
 
   // 🔹 Ketika memilih ukuran
-  const handleSizeConfirm = (
-    size: "small" | "medium" | "large",
-    finalPrice: number
-  ) => {
+  const handleVariantConfirm = (variant: Variant, finalPrice: number) => {
     if (!selectedItem) return
 
     addItem({
@@ -149,16 +146,18 @@ export function MenuGrid() {
       name: selectedItem.name,
       price: finalPrice,
       imageQuery: selectedItem.image,
-      size,
+      variant: variant.id.toString(), // simpan ID variant
+      variantName: variant.name, // simpan nama variant      
     })
 
     toast({
       title: "Ditambahkan",
-      description: `${selectedItem.name} ukuran ${size} telah ditambahkan.`,
+      description: `${selectedItem.name} varian ${variant.name} telah ditambahkan.`,
     })
 
     setSelectedItem(null)
   }
+
 
 
   // 🔹 Untuk minuman (langsung tambahkan)
@@ -177,6 +176,7 @@ export function MenuGrid() {
       name: item.name,
       price: item.price,
       imageQuery: item.image,
+      variant: null,
     })
 
     toast({
@@ -267,12 +267,13 @@ export function MenuGrid() {
       </Tabs>
 
       {selectedItem && (
-        <SizeSelectionDialog
+        <VariantSelectionDialog
           open={sizeDialogOpen}
           onOpenChange={setSizeDialogOpen}
+          productId={selectedItem.id}
           itemName={selectedItem.name}
           basePrice={selectedItem.price}
-          onConfirm={handleSizeConfirm}
+          onConfirm={handleVariantConfirm}
         />
       )}
     </div>
