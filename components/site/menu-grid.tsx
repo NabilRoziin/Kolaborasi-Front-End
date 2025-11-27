@@ -19,7 +19,6 @@ type MenuItem = {
   imageQuery: string
   quantity: number
   category_id: number
-  image: string
 }  
 
 function formatIDR(n: number) {
@@ -99,7 +98,7 @@ export function MenuGrid() {
 
           allProducts = [...allProducts, ...products]
         }
-
+        console.log("🎯 Final allProducts:", allProducts)
         // 3. Masukkan ke state
         setDataMenu(allProducts)        
 
@@ -145,7 +144,7 @@ export function MenuGrid() {
       id: selectedItem.id,
       name: selectedItem.name,
       price: finalPrice,
-      imageQuery: selectedItem.image,
+      imageQuery: selectedItem.imageQuery,
       variant: variant.id.toString(), // simpan ID variant
       variantName: variant.name, // simpan nama variant      
     })
@@ -175,7 +174,7 @@ export function MenuGrid() {
       id: item.id,
       name: item.name,
       price: item.price,
-      imageQuery: item.image,
+      imageQuery: item.imageQuery,
       variant: null,
     })
 
@@ -197,7 +196,7 @@ export function MenuGrid() {
           >
             <div className="relative aspect-[4/3] w-full bg-card overflow-hidden">
               <Image
-                src={MENU_IMAGE_MAP[item.id] ?? "/placeholder.svg?height=400&width=600&query=menu%20item%20image"}
+                src={item.imageQuery ? `http://localhost:8000/storage/${item.imageQuery}` : "/placeholder.svg?height=400&width=600&query=menu%20item%20image"}
                 alt={`${item.name} image`}
                 fill
                 className={`object-cover transition-transform duration-300 ease-out group-hover:scale-105 motion-reduce:transition-none ${outOfStock ? "opacity-60" : ""}`}
