@@ -106,7 +106,7 @@ export function FloatingCart() {
           {items.length === 0 ? (
             <div className="grid place-items-center rounded-lg border border-border p-6 text-center">
               <Image
-                src={"/images/cart_15052599.png"}
+                src={"/images/shopping-cart.png"}
                 alt="Keranjang belanja kosong"
                 width={120}
                 height={120}
@@ -128,7 +128,7 @@ export function FloatingCart() {
                     >
                       <div className="relative h-14 w-14 overflow-hidden rounded-md bg-muted">
                         <Image
-                          src={MENU_IMAGE_MAP[item.id] || "/images/menu/classic-chicken-kebab.jpg"}
+                          src={item.imageQuery ? `http://localhost:8000/storage/${item.imageQuery}` : "/placeholder.svg?height=400&width=600&query=menu%20item%20image"}
                           alt={`${item.name} image`}
                           fill
                           className="object-cover"

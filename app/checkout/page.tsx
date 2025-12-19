@@ -18,8 +18,8 @@ import { useAuth } from "@/hooks/use-auth"
 import { getActiveDiscountPercentage, isClaimed } from "@/lib/discount"
 
 const PAYMENT_METHODS = [
-  { id: "cash", name: "Cash", logo: "/cash-logo.png" },
-  { id: "emoney", name: "E-Money", logo: "/emoney-logo.jpg" },
+  { id: "cash", name: "Cash", logo: "/images/money.png" },
+  { id: "emoney", name: "E-Money", logo: "/images/e-payment.png" },
 ]
 
 const SHIPPING_FEE = 5000
