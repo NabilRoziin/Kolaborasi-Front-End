@@ -102,7 +102,7 @@ export function Testimonials() {
     }
     
     fetchPage()
-  })
+  },[])
 
   if (!pageData) return <p>Loading...</p>
 
