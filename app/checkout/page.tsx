@@ -68,6 +68,20 @@ export default function CheckoutPage() {
     }
   }
 
+  async function getProvinces() {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`http://127.0.0.1:8000/api/rajaongkir/provinces`, {
+        body: JSON.stringify({
+          status: status
+        }),
+      });
+    } catch (error) {
+      console.error("Updated Error: ", error);
+      throw error;
+    }
+  }
+
   // Tambahkan function ini setelah sendOrderToAPI function
   async function updateOrderStatus(orderId: string, status: string) {
     try {
@@ -117,7 +131,7 @@ export default function CheckoutPage() {
         total,
       },
       paymentMethod: PAYMENT_METHODS.find((pm) => pm.id === paymentMethod)?.name || "",
-      paymentType: paymentMethod, // ✅ TAMBAH INI untuk tahu jenis pembayaran
+      paymentType: paymentMethod,
     },
     products: items.map((item) => ({
       product_id: item.id,
@@ -127,7 +141,6 @@ export default function CheckoutPage() {
     }))
   };
 
-  // ✅ LOGIC BERBEDA UNTUK CASH vs E-MONEY
   if (paymentMethod === "cash") {
     // Untuk Cash - langsung simpan order dan redirect ke notifications
     const saved = await sendOrderToAPI(orderData);
@@ -330,20 +343,7 @@ export default function CheckoutPage() {
                     className={errors.phone ? "border-destructive" : ""}
                   />
                   {errors.phone && <p className="text-xs md:text-sm text-destructive">{errors.phone}</p>}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="address">Alamat Lengkap</Label>
-                  <Textarea
-                    id="address"
-                    placeholder="Jl. Contoh No. 123, RT/RW 01/02"
-                    rows={3}
-                    value={formData.address}
-                    onChange={(e) => handleInputChange("address", e.target.value)}
-                    className={errors.address ? "border-destructive" : ""}
-                  />
-                  {errors.address && <p className="text-xs md:text-sm text-destructive">{errors.address}</p>}
-                </div>
+                </div>               
 
                 <div className="space-y-2">
                   <Label htmlFor="notes">Catatan (Opsional)</Label>
@@ -355,6 +355,38 @@ export default function CheckoutPage() {
                     onChange={(e) => handleInputChange("notes", e.target.value)}
                   />
                 </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg md:text-xl">Alamat Pengiriman</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="firstName">Provinsi</Label>
+                    <Input
+                      id="firstName"
+                      placeholder="John"
+                      value={formData.firstName}
+                      onChange={(e) => handleInputChange("firstName", e.target.value)}
+                      className={errors.firstName ? "border-destructive" : ""}
+                    />
+                    {errors.firstName && <p className="text-xs md:text-sm text-destructive">{errors.firstName}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="lastName">kota</Label>
+                    <Input
+                      id="lastName"
+                      placeholder="Doe"
+                      value={formData.lastName}
+                      onChange={(e) => handleInputChange("lastName", e.target.value)}
+                      className={errors.lastName ? "border-destructive" : ""}
+                    />
+                    {errors.lastName && <p className="text-xs md:text-sm text-destructive">{errors.lastName}</p>}
+                  </div>
+                </div>                                      
               </CardContent>
             </Card>
 
